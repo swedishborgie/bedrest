@@ -1,0 +1,63 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    color: white;
+    font-family: Helvetica;
+}
+#controls {
+    width: 250px;
+    background-color: #303030;
+    border: 1px solid white;
+    border-radius: 30px;
+    padding: 5px;
+    padding-bottom: 10px;
+    margin: auto;
+    margin-top: 20px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.header {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+.set {
+    display: flex;
+    margin-left: 2px;
+}
+.col1, .col2, .col3 {
+    width: 80px;
+}
+.col2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.remote_button {
+    display: inline-block;
+    width: 75px;
+    height: 75px;
+    border: 1px solid white;
+    border-radius: 10px;
+    margin: 2.5px;
+    background-color: #606060;
+    color: white;
+    font-family: Helvetica;
+    font-size: 13pt;
+}
+.remote_button:active {
+    background-color: black;
+}
+#bedselect {
+    width: 90%;
+    margin-left: 5%;
+    margin-bottom: .5em;
+    background-color: black;
+    color: white;
+}
