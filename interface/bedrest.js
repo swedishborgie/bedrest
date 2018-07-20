@@ -79,7 +79,7 @@ class BedRestUi {
     sendCommand(cmd) {
         let request = new XMLHttpRequest();
         let bedName = document.getElementById("bedselect").value;
-        request.open("GET", this.url + "/bed/" + bedName + "/" + cmd, true);
+        request.open("POST", this.url + "/bed/" + bedName + "/" + cmd, true);
         request.send();
         request.onreadystatechange = function() {
             if(request.readyState === 4 && request.status === 200) {

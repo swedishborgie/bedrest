@@ -127,6 +127,10 @@ class BedREST {
 			res.writeHead(200);
 			res.end();
 			return;
+		} else if(req.method !== "POST") {
+			res.writeHead(405);
+			res.end();
+			return;
 		}
 		let handled = false;
 		let match = req.url.match(/\/bed\/([^\/]+)\/([^\/]+)\/?([0-9a-fA-F]*)$/);
