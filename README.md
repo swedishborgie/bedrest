@@ -3,6 +3,9 @@
 A nodejs based REST service for controlling a Reverie MotionSIGNATURE adjustable
 bed foundation equipped with a Bluetooth LE controller.
 
+This service is also reported to work with the Purple PowerBase which appears to
+use the same controller as the MotionSIGNATURE.
+
 [![Demonstration of BedREST](images/video.jpg)](https://www.youtube.com/watch?v=mgY0pdUZ6sw)
 
 ## Requirements
