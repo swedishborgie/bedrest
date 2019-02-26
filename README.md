@@ -120,22 +120,32 @@ following commands are write requests.
 | Foot Up                | 0x550257     | None      | Start elevating the foot position.                                                      |
 | Foot Down              | 0x550451     | None      | Start lowering the foot position.                                                       |
 | Stop Motion            | 0x55FFAA     | None      | Stops head and foot motion.                                                             |
-| Set Head Position      | 0x5551NN00   | 0 - 0x64  | Sets the absolute head position.                                                        |
-| Set Foot Position      | 0x5552NN00   | 0 - 0x64  | Sets the absolute foot position.                                                        |
+| Set Head Position      | 0x5551NNCC   | 0 - 0x64  | Sets the absolute head position.                                                        |
+| Set Foot Position      | 0x5552NNCC   | 0 - 0x64  | Sets the absolute foot position.                                                        |
 | Head Massage Up        | 0x553164     | None      | Start increasing the head massage intensity.                                            |
 | Head Massage Down      | 0x553366     | None      | Start decreasing the head massage intensity.                                            |
 | Foot Massage Up        | 0x553267     | None      | Start increasing the foot massage intensity.                                            |
 | Foot Massage Down      | 0x553461     | None      | Start decreasing the foot massage intensity.                                            |
 | Stop Massage Motion    | 0x550055     | None      | Stop increasing or decreasing foot or head massage intensity.                           |
 | Stop Massage           | 0x553560     | None      | Stop head and foot massage immediately.                                                 |
-| Set Head Massage Level | 0x5553NN00   | 0 - 0x64  | Set the absolute head massage intensity.                                                |
-| Set Foot Massage Level | 0x5554NN00   | 0 - 0x64  | Set the absolute foot massage intensity.                                                |
+| Set Head Massage Level | 0x5553NNCC   | 0 - 0x64  | Set the absolute head massage intensity.                                                |
+| Set Foot Massage Level | 0x5554NNCC   | 0 - 0x64  | Set the absolute foot massage intensity.                                                |
 | Full Body Massage      | 0x55540A0B   | None      | Start a full body massage.                                                              |
 | Flat                   | 0x550550     | None      | Flatten the head and foot positions.                                                    |
 | Zero G                 | 0x551540     | None      | Put the head and foot positions into "Zero G" mode.                                     |
 | Anti-snore             | 0x551643     | None      | Put the head and foot positions into anti-snore mode.                                   |
-| Mem Recall             | 0x551N00     | 1 - 4     | Recalls memory position 1 - 4.                                                          |
-| Mem Save               | 0x552N00     | 1 - 4     | Saves current position in memory position 1-4.                                          |
+| Mem Recall             | 0x551NCC     | 1 - 4     | Recalls memory position 1 - 4.                                                          |
+| Mem Save               | 0x552NCC     | 1 - 4     | Saves current position in memory position 1-4.                                          |
 | Light Toggle           | 0x555B       | None      | Toggles the under-bed night-light on and off.                                           |
-| Light Brightness       | 0x555ANN00   | 0 - 0x7C  | Adjusts the night-light brightness.                                                     |
+| Light Brightness       | 0x555ANNCC   | 0 - 0x7C  | Adjusts the night-light brightness.                                                     |
 | Light Timer            | 0x555FNNNN   | Seconds   | Sets the number of seconds until the light automatically turns off, 0 to disable timer. |
+
+Note: CC in the above table is checksum. Checksum is calculated by xor-ing all of the preceeding command bytes together.
+
+For instance take the "Set Head Position" command (say we're trying to set the value 10):
+
+    55 51 0a 00
+
+The checksum would be:
+
+    0x55 ^ 0x51 ^ 0x0a = 0x0e

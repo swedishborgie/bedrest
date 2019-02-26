@@ -79,8 +79,8 @@ class BedREST {
 			"footposition": { min: 0, max: 0x64, pos: 2, len: 1, command: Buffer.from("55520000", "hex") },
 			"headmassage": { min: 0, max: 0x64, pos: 2, len: 1, command: Buffer.from("55530000", "hex") },
 			"footmassage": { min: 0, max: 0x64, pos: 2, len: 1, command: Buffer.from("55540000", "hex") },
-			"lightbrightness": { min: 0, max: 0x7c, pos: 2, len: 1, command: Buffer.from("55540000", "hex") },
-			"lighttimer": { min: 0, max: 0xFFFF, pos: 2, len: 2, command: Buffer.from("55540000", "hex") }
+			"lightbrightness": { min: 0, max: 0x7c, pos: 2, len: 1, command: Buffer.from("555A0000", "hex") },
+			"lighttimer": { min: 0, max: 0xFFFF, pos: 2, len: 2, command: Buffer.from("555F0000", "hex") }
 		};
 		/**
 		 * Map of beds we're connected to with the label of the device as the key.
@@ -148,6 +148,16 @@ class BedREST {
 						let arg = Buffer.from(match[3], "hex");
 						let cmdBuffer = Buffer.from(cmd.command);
 						arg.copy(cmdBuffer, cmd.pos, 0, cmd.len);
+
+						//Do checksum
+						if(cmd.len === 1) {
+							let sum = 0;
+							for(let i = 0; i < cmdBuffer.length - 1; i++) {
+								sum ^= cmdBuffer[i]
+							}
+							cmdBuffer[cmdBuffer.length - 1] = sum;
+						}
+
 						this.sendCommand(bed, match[2], cmdBuffer, res);
 						handled = true;
 					}
