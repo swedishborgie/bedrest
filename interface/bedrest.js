@@ -25,8 +25,12 @@ class BedRestUi {
 
     openWebsocket() {
         this.ws = new WebSocket(this.wsUrl);
-        this.ws.onmessage = (msg) => {
-            this.updateStatus(JSON.parse(msg.data));
+        this.ws.onmessage = (wsMsg) => {
+            let msg = JSON.parse(wsMsg.data);
+            let bedName = document.getElementById("bedselect").value;
+            if(msg.bed === bedName) {
+                this.updateStatus(msg);
+            }
         }
         this.ws.onclose = () => {
             setTimeout(() => {
@@ -177,4 +181,8 @@ document.addEventListener("DOMContentLoaded", () => {
     bed.register();
     bed.getStatus(bed.updateStatus);
     bed.openWebsocket();
+
+    document.getElementById("bedselect").addEventListener("change", ()=>{
+        bed.getStatus(bed.updateStatus);
+    }, false);
 }), false;
