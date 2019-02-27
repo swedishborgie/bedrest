@@ -10,6 +10,7 @@
     	"url" : "https://github.com/swedishborgie/bedrest.git"
   	},
     "dependencies": {
-        "noble": "^1.8.1"
+        "noble": "^1.8.1",
+        "ws": "^6.1.4"
     }
 }

@@ -11,12 +11,39 @@ class BedRestUi {
          */
         this.url = "http://localhost:8080";
         /**
+         * This should be the URL to the websocket for BedREST.
+         */
+        this.wsUrl = "ws://localhost:8080";
+        /**
          * Add the labels of your beds from your BedREST configuration here.
          */
         this.beds = {
             "alice": "Alice's Bed",
             "bob": "Bob's Bed"
         };
+    }
+
+    openWebsocket() {
+        this.ws = new WebSocket(this.wsUrl);
+        this.ws.onmessage = (msg) => {
+            this.updateStatus(JSON.parse(msg.data));
+        }
+        this.ws.onclose = () => {
+            setTimeout(() => {
+                this.openWebsocket();
+            }, 2000);
+        }
+    }
+
+    updateStatus(data) {
+        document.getElementById("head_abs").value = data.status.headPos;
+        document.getElementById("head_abs_num").value = data.status.headPos;
+        document.getElementById("foot_abs").value = data.status.footPos;
+        document.getElementById("foot_abs_num").value = data.status.footPos;
+        document.getElementById("head_mass_abs").value = data.status.headMassage;
+        document.getElementById("head_mass_abs_num").value = data.status.headMassage;
+        document.getElementById("foot_mass_abs").value = data.status.footMassage;
+        document.getElementById("foot_mass_abs_num").value = data.status.footMassage;
     }
 
     /**
@@ -54,6 +81,18 @@ class BedRestUi {
         document.getElementById("button_preset_2").addEventListener("click", () => this.sendCommand("memrecall2"), false);
         document.getElementById("button_preset_3").addEventListener("click", () => this.sendCommand("memrecall3"), false);
         document.getElementById("button_preset_4").addEventListener("click", () => this.sendCommand("memrecall4"), false);
+
+        document.getElementById("head_abs").addEventListener("change", (evt) => this.changeSlider("headposition", document.getElementById("head_abs"), document.getElementById("head_abs_num"), document.getElementById("head_abs").value), false);
+        document.getElementById("head_abs_num").addEventListener("change", (evt) => this.changeSlider("headposition", document.getElementById("head_abs"), document.getElementById("head_abs_num"), document.getElementById("head_abs_num").value), false);
+        
+        document.getElementById("foot_abs").addEventListener("change", (evt) => this.changeSlider("footposition", document.getElementById("foot_abs"), document.getElementById("foot_abs_num"), document.getElementById("foot_abs").value), false);
+        document.getElementById("foot_abs_num").addEventListener("change", (evt) => this.changeSlider("footposition", document.getElementById("foot_abs"), document.getElementById("foot_abs_num"), document.getElementById("foot_abs_num").value), false);
+        
+        document.getElementById("head_mass_abs").addEventListener("change", (evt) => this.changeSlider("headmassage", document.getElementById("head_mass_abs"), document.getElementById("head_mass_abs_num"), document.getElementById("head_mass_abs").value), false);
+        document.getElementById("head_mass_abs_num").addEventListener("change", (evt) => this.changeSlider("headmassage", document.getElementById("head_mass_abs"), document.getElementById("head_mass_abs_num"), document.getElementById("head_mass_abs_num").value), false);
+        
+        document.getElementById("foot_mass_abs").addEventListener("change", (evt) => this.changeSlider("footmassage", document.getElementById("foot_mass_abs"), document.getElementById("foot_mass_abs_num"), document.getElementById("foot_mass_abs").value), false);
+        document.getElementById("foot_mass_abs_num").addEventListener("change", (evt) => this.changeSlider("footmassage", document.getElementById("foot_mass_abs"), document.getElementById("foot_mass_abs_num"), document.getElementById("foot_mass_abs_num").value), false);
         
         //Add keyboard shortcuts.
         window.addEventListener("keypress", (evt) => {
@@ -72,6 +111,17 @@ class BedRestUi {
         Object.keys(this.beds).forEach((key) => select.options[select.options.length] = new Option(this.beds[key], key));
     }
 
+    changeSlider(cmd, slider, input, val) {
+        slider.value = val;
+        input.value = val;
+
+        val = parseInt(val);
+        if(cmd === "headmassage" || cmd === "footmassage") {
+            val *= 10;
+        }
+        this.sendCommandArg(cmd, parseInt(val));
+    }
+
     /**
      * Sends a command to the BedREST service.
      * @param {string} cmd Command to send.
@@ -88,10 +138,43 @@ class BedRestUi {
             }
         }
     }
+
+    /**
+     * Sends a command to the BedREST service with arguments.
+     * @param {string} cmd Command to send.
+     * @param {number} num Argument to send.
+     */
+    sendCommandArg(cmd, num) {
+        let request = new XMLHttpRequest();
+        let bedName = document.getElementById("bedselect").value;
+        request.open("POST", this.url + "/bed/" + bedName + "/" + cmd + "/" + num.toString(16), true);
+        request.send();
+        request.onreadystatechange = function() {
+            if(request.readyState === 4 && request.status === 200) {
+                let response = JSON.parse(request.responseText);
+                console.log("Server said: ", response);
+            }
+        }
+    }
+
+    getStatus(callback) {
+        let request = new XMLHttpRequest();
+        let bedName = document.getElementById("bedselect").value;
+        request.open("POST", this.url + "/bed/" + bedName + "/status", true);
+        request.send();
+        request.onreadystatechange = function() {
+            if(request.readyState === 4 && request.status === 200) {
+                let response = JSON.parse(request.responseText);
+                callback(response);
+            }
+        }
+    }
 }
 
 //Creates a new instance of the class and registers it with the DOM when we're ready.
 document.addEventListener("DOMContentLoaded", () => {
     let bed = new BedRestUi();
     bed.register();
+    bed.getStatus(bed.updateStatus);
+    bed.openWebsocket();
 }), false;

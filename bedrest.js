@@ -20,6 +20,7 @@
  */
 const noble = require("noble");
 const http = require("http");
+const WebSocket = require("ws");
 
 /**
  * Class for BedREST, handles the web server and Bluetooth LE bits.
@@ -94,6 +95,14 @@ class BedREST {
 		 * A reference to our HTTP server.
 		 */
 		this.server = false;
+		/**
+		 * A reference to the websocket server.
+		 */
+		this.ws = false;
+		/**
+		 * Currently open websocket connections.
+		 */
+		this.wsConnections = [];
 	}
 
 	/**
@@ -105,6 +114,14 @@ class BedREST {
 		this.server.on("request", (req, res)=>this.handleRequest(req,res));
 		this.server.listen({"port": 8080});
 
+		this.ws = new WebSocket.Server({ server: this.server });
+		this.ws.on("connection", (con) => {
+			this.wsConnections.push(con);
+			con.on("close", () => {
+				this.wsConnections = this.wsConnections.filter((val) => con !== val)
+			});
+		});
+		
 		//Start up Noble
 		noble.on("stateChange", (state) => {
 			if(state === "poweredOn") {
@@ -168,6 +185,15 @@ class BedREST {
 				if(bed && cmd) {
 					this.sendCommand(bed, match[2], cmd, res);
 					handled = true;
+				} else if(bed && match[2] === "status") {
+					handled = true;
+					res.writeHead(200);
+					res.write(JSON.stringify({
+						version: bed.version,
+						status: bed.status,
+						heartbeat: bed.heartbeat
+					}));
+					res.end();
 				}
 			}
 		}
@@ -266,6 +292,45 @@ class BedREST {
 				//Add the new bed to the stack.
 				bed.service = services[0];
 				bed.characteristic = characteristics[0];
+				bed.characteristic.on('data', (data, isNotification) => {
+					if(data[0] === 0x56) {
+						//Version information.
+						bed.version = data.slice(1).toString("utf-8");
+					} else if(data[0] === 0x55 && data[1] === 0x00) {
+						//Position/Vibration Information
+						bed.status = {
+							headPos: data[2],
+							footPos: data[3],
+							headMassage: data[4],
+							footMassage: data[5],
+							unknown1: data[6],
+							unknown2: data[7],
+							checksum: data[8]
+						};
+
+						this.wsConnections.forEach((con) => {
+							try {
+								con.send(JSON.stringify({
+									bed: this.beds[bed.device.address],
+									address: bed.device.address,
+									status: bed.status
+								}));
+							} catch (e) {
+								console.log("Problem sending websocket update: ", e);
+							}
+						});
+					} else if(data[0] === 0x55 && data[1] === 0x66) {
+						//Heartbeat
+						bed.heartbeat = Date.now();
+					} else {
+						console.log("Unknown Data:", this.beds[bed.device.address], data);
+					}
+				});
+				bed.characteristic.subscribe((err) => {
+					if(err) {
+						console.log("Error subscribing to characteristic: ", err)
+					}
+				});
 				bed.connected = true;
 			});
 		});
@@ -302,6 +367,18 @@ class Bed {
 		 * Whether or not we're actually connected.
 		 */
 		this.connected = false;
+		/**
+		 * Current status of the bed.
+		 */
+		this.status = false;
+		/**
+		 * Protocol version of the bed.
+		 */
+		this.version = "";
+		/**
+		 * Last heartbeat received.
+		 */
+		this.heartbeat = 0;
 	}
 }
 

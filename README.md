@@ -83,6 +83,7 @@ of the following:
 | lighttoggle        | No          | N/A        | Toggles the under-bed night-light on and off.                                           |
 | lightbrightness    | Yes         | 0 - 0x7C   | Adjusts the night-light brightness.                                                     |
 | lighttimer         | Yes         | 0 - 0xFFFF | Sets the number of seconds until the light automatically turns off, 0 to disable timer. |
+| status             | No          | N/A        | Gets the current position and massage status of the bed along with the version of the protocol and the last heartbeat time.
 
 If the command you're trying to send requires a value it should be sent in hex,
 without any leading 0x. For example sending decimal 100 (0x64 hex) to the
@@ -96,6 +97,31 @@ Commands that don't require a value should simply omit it, for example the
     POST http://localhost:8080/bed/mybed/flat
 
 There's an example web application located in the interface/ folder.
+
+#### Streaming Updates
+
+If you want to receive streaming updates for the position of the bed you can
+connect to the server from a websocket connection like this:
+
+    let ws = new WebSocket("ws://localhost:8080")
+    ws.onmessage = (msg) => console.log(JSON.parse(msg.data))
+
+When you adjust the position or the massage level of the bed you should start
+to see updates in your console like this:
+
+    {
+        "bed": "alice",
+        "address": "00:01:02:03:04:05",
+        "status": {
+            "headPos": 30,
+            "footPos": 65,
+            "headMassage": 0,
+            "footMassage": 0,
+            "unknown1": 0,
+            "unknown2": 0,
+            "checksum": 0
+        }
+    }
 
 ## Bluetooth LE Technical Details
 
@@ -149,3 +175,14 @@ For instance take the "Set Head Position" command (say we're trying to set the v
 The checksum would be:
 
     0x55 ^ 0x51 ^ 0x0a = 0x0e
+
+#### Reading the Current Status of the Bed
+
+If you subscribe for notifications on the characteristic you should get one of
+three message types:
+
+| Name             | Pattern                      | Description |
+|------------------|------------------------------|-------------|
+| Protocol Version | 0x56:VV:VV:VV                | The version of the protocol, V's are an ASCII string (e.g. '1.0').
+| Current Status   | 0x55:00:HH:FF:MH:MF:U1:U2:CC | Current status of the bed where:<ul><li>HH = Head Position</li><li>FF = Foot Position</li><li>MH = Massage Head Level</li><li>HF = Massage Foot Level</li><li>U1 = Unknown, varies per bed but doesn't seem to change otherwise.</li><li>U2 = Unknown, varies per bed but doesn't seem to change otherwise.</li><li>CC = XOR checksum of the previous bytes.</li></ul>
+| Heartbeat        | 0x55:66:11                   | Unknown, but appears to be a heartbeat of some kind. Data doesn't appear to change.

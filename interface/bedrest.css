@@ -61,3 +61,24 @@ body, html {
     background-color: black;
     color: white;
 }
+#status {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 300px;
+}
+
+#status span {
+    display: block;
+    width: 100%;
+}
+
+#status input[type=range] {
+    width: 70%;
+    height: 20px;
+}
+
+#status input[type=number] {
+    width: 20%;
+    height: 20px;
+}
