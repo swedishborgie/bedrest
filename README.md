@@ -66,9 +66,9 @@ of the following:
 | massagefootup      | No          | N/A        | Start increasing the foot massage intensity.                                            |
 | massagefootdown    | No          | N/A        | Start decreasing the foot massage intensity.                                            |
 | stopmassagemotion  | No          | N/A        | Stop head and foot massage immediately.                                                 |
-| headmassage        | Yes         | 0 - 0x64   | Set the absolute head massage intensity.                                                |
-| footmassage        | Yes         | 0 - 0x64   | Set the absolute foot massage intensity.                                                |
-| fullbodymassage    | No          | N/A        | Start a full body massage.                                                              |
+| headmassage        | Yes         | 0 - 0x0A   | Set the absolute head massage intensity.                                                |
+| footmassage        | Yes         | 0 - 0x0A   | Set the absolute foot massage intensity.                                                |
+| fullbodymassage    | No          | 0x41 - 0x44| Start a full body massage.                                                              |
 | flat               | No          | N/A        | Flatten the head and foot positions.                                                    |
 | zerog              | No          | N/A        | Put the head and foot positions into "Zero G" mode.                                     |
 | antisnore          | No          | N/A        | Put the head and foot positions into anti-snore mode.                                   |
@@ -154,9 +154,9 @@ following commands are write requests.
 | Foot Massage Down      | 0x553461     | None      | Start decreasing the foot massage intensity.                                            |
 | Stop Massage Motion    | 0x550055     | None      | Stop increasing or decreasing foot or head massage intensity.                           |
 | Stop Massage           | 0x553560     | None      | Stop head and foot massage immediately.                                                 |
-| Set Head Massage Level | 0x5553NNCC   | 0 - 0x64  | Set the absolute head massage intensity.                                                |
-| Set Foot Massage Level | 0x5554NNCC   | 0 - 0x64  | Set the absolute foot massage intensity.                                                |
-| Full Body Massage      | 0x55540A0B   | None      | Start a full body massage.                                                              |
+| Set Head Massage Level | 0x5553NNCC   | 0 - 0x0A  | Set the absolute head massage intensity.                                                |
+| Set Foot Massage Level | 0x5554NNCC   | 0 - 0x0A  | Set the absolute foot massage intensity.                                                |
+| Full Body Massage      | 0x554NCC     | 1 - 4     | Start a full body massage, four different varieties (1-4).                              |
 | Flat                   | 0x550550     | None      | Flatten the head and foot positions.                                                    |
 | Zero G                 | 0x551540     | None      | Put the head and foot positions into "Zero G" mode.                                     |
 | Anti-snore             | 0x551643     | None      | Put the head and foot positions into anti-snore mode.                                   |

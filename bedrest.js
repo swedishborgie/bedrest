@@ -69,7 +69,6 @@ class BedREST {
 			"lighttoggle": Buffer.from("555B", "hex"),
 			"zerog": Buffer.from("551540", "hex"),
 			"stopmassage": Buffer.from("553560", "hex"),
-			"fullbodymassage": Buffer.from("55540A0B", "hex"),
 			"stopmassagemotion": Buffer.from("550055", "hex")
 		};
 		/**
@@ -78,10 +77,11 @@ class BedREST {
 		this.commandListWithArgs = {
 			"headposition": { min: 0, max: 0x64, pos: 2, len: 1, command: Buffer.from("55510000", "hex") },
 			"footposition": { min: 0, max: 0x64, pos: 2, len: 1, command: Buffer.from("55520000", "hex") },
-			"headmassage": { min: 0, max: 0x64, pos: 2, len: 1, command: Buffer.from("55530000", "hex") },
-			"footmassage": { min: 0, max: 0x64, pos: 2, len: 1, command: Buffer.from("55540000", "hex") },
+			"headmassage": { min: 0, max: 0x0a, pos: 2, len: 1, command: Buffer.from("55530000", "hex") },
+			"footmassage": { min: 0, max: 0x0a, pos: 2, len: 1, command: Buffer.from("55540000", "hex") },
 			"lightbrightness": { min: 0, max: 0x7c, pos: 2, len: 1, command: Buffer.from("555A0000", "hex") },
-			"lighttimer": { min: 0, max: 0xFFFF, pos: 2, len: 2, command: Buffer.from("555F0000", "hex") }
+			"lighttimer": { min: 0, max: 0xFFFF, pos: 2, len: 2, command: Buffer.from("555F0000", "hex") },
+			"fullbodymassage": { min: 0x41, max: 0x44, pos: 1, len: 1, command: Buffer.from("550000", "hex")}
 		};
 		/**
 		 * Map of beds we're connected to with the label of the device as the key.

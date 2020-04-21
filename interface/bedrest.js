@@ -58,7 +58,7 @@ class BedRestUi {
         document.getElementById("button_zerog").addEventListener("click", () => this.sendCommand("zerog"), false);
         document.getElementById("button_antisnore").addEventListener("click", () => this.sendCommand("antisnore"), false);
         document.getElementById("button_nightlight").addEventListener("click", () => this.sendCommand("lighttoggle"), false);
-        document.getElementById("button_fullbody").addEventListener("click", () => this.sendCommand("fullbodymassage"), false);
+        document.getElementById("button_fullbody").addEventListener("click", () => this.sendCommandArg("fullbodymassage", 0x41), false);
         document.getElementById("button_stopmassage").addEventListener("click", () => this.sendCommand("stopmassage"), false);
 
         document.getElementById("button_headup").addEventListener("mousedown", () => this.sendCommand("headup"), false);
