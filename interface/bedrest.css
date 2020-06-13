@@ -61,12 +61,19 @@ body, html {
     background-color: black;
     color: white;
 }
-#status {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    width: 300px;
+@media not all and (max-width:600px) {
+	#status {
+    		position: absolute;
+    		right: 10px;
+    		top: 10px;
+    		width: 300px;
+	}
 }
+@media (max-width: 800px) {
+	#status {
+		display: none;
+	}
+}	
 
 #status span {
     display: block;

@@ -1,0 +1,15 @@
+[Unit]
+Description=Bed Controller
+
+[Service]
+Type=exec
+WorkingDirectory=/home/mpowers/bedrest
+ExecStart=/usr/bin/nodejs /home/mpowers/bedrest/bedrest.js
+User=mpowers
+Group=mpowers
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+Wants=network-online.target
+After=network-online.target

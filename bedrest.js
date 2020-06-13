@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with BedREST. If not, see <http://www.gnu.org/licenses/>.
  */
-const noble = require("noble");
+const noble = require("@abandonware/noble");
 const http = require("http");
 const WebSocket = require("ws");
 
@@ -103,6 +103,7 @@ class BedREST {
 		 * Currently open websocket connections.
 		 */
 		this.wsConnections = [];
+		this.fileServer = require("serve-handler") 
 	}
 
 	/**
@@ -142,10 +143,6 @@ class BedREST {
 		res.setHeader("Content-Type", "application/json");
 		if(req.method === "OPTIONS") {
 			res.writeHead(200);
-			res.end();
-			return;
-		} else if(req.method !== "POST") {
-			res.writeHead(405);
 			res.end();
 			return;
 		}
@@ -198,12 +195,12 @@ class BedREST {
 			}
 		}
 		if(!handled) {
-			//We didn't understand the command, bail.
-			res.writeHead(404);
-			res.end(JSON.stringify({
-				success: false,
-				error: "Invalid command, you requested: " + req.url
-			}));
+			this.fileServer(req, res, {
+				"public": "./interface",
+				"rewrites": [
+					{ "source": "/", "destination": "/bedrest.html"}
+				]
+			});
 		}
 	}
 
