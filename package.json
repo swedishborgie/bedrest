@@ -12,6 +12,6 @@
     "dependencies": {
         "@abandonware/noble": "^1.9.2-9",
         "serve": "^14.2.5",
-        "ws": "^7.4.6"
+        "ws": "^7.5.11"
     }
 }
